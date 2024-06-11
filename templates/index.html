@@ -34,6 +34,12 @@
                           <p>JD Match: ${data["JD Match"]}%</p>
                           <p>Missing Keywords: ${data["MissingKeywords"].join(", ")}</p>
                           <p>ATS Friendliness: ${data["ATS Friendliness"]}</p>
+                         <ul>
+                            <li>Profile Summary: ${data["Profile Summary"]}</li>
+                            <li>Things to be Removed: ${data["ThingsToBeRemoved"].join(", ")}</li>
+                            <li>Things to be Added: ${data["ThingsToBeAdded"].join(", ")}</li>
+                            </ul>
+
                       `;
                   }
               }).catch(error => {
