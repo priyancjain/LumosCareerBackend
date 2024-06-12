@@ -38,6 +38,7 @@ For each evaluation, you should:
 4. Assess the ATS friendliness of the resume, considering factors like formatting, use of keywords, and clarity.
 5. Suggest things to be removed from the resume to enhance its relevance and readability.
 6. Suggest things to be added to the resume to improve its alignment with the job description.
+7. Suggestions for improving the resume's overall quality and relevance.
 
 Evaluate the following resume and job description:
 
@@ -45,14 +46,15 @@ Resume: {text}
 Description: {jd}
 
 I want the response in one single string with the following structure:
-{
+[
     "JD Match": "%",
     "MissingKeywords": [],
     "Profile Summary": "",
     "ATS Friendliness": "",
     "ThingsToBeRemoved": [],
-    "ThingsToBeAdded": []
-}
+    "ThingsToBeAdded": [],
+    "JD Summary": "",
+]
 """
 
     response = model.generate_content(prompt)
