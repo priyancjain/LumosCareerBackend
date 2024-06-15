@@ -3,6 +3,7 @@ from utils.pdf_extractor import input_pdf_text
 from utils.cover_letter import cover_letter
 from utils.resume_analyzer import analyze_resume
 from utils.summarizer import summarize_job_description
+from utils.interview_Guide import generate_interview_guide
 import os
 from dotenv import load_dotenv
 
@@ -47,6 +48,19 @@ def coverletter():
         text = input_pdf_text(uploaded_file)
         cover_letter_text = cover_letter(text, jd)
         return jsonify({"cover_letter": cover_letter_text})
+    
+@app.route("/interviewguide", methods=["POST"])
+def interviewguide():
+    jd = request.form["job_description"]
+    uploaded_file = request.files["resume"]
+
+    if uploaded_file and jd:
+        text = input_pdf_text(uploaded_file)
+        interview_guide_text = generate_interview_guide(text, jd)
+        return jsonify({"interview_guide": interview_guide_text})
+    else:
+        return jsonify({"error": "No resume or job description provided"})
+
 
 if __name__ == "__main__":
     app.run(debug=True)
