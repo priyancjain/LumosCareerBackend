@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html>
 <head>
     <title>Smart ATS - Improve Your Resume for ATS</title>
@@ -7,6 +7,116 @@
 </head>
 <body>
     <h1>job buddy- to help our buddies get their desired job.</h1>
+    <form id="resumeForm" method="POST" enctype="multipart/form-data" action="/analyze">
+        <label for="job_description">Job Description:</label><br>
+        <textarea id="job_description" name="job_description" rows="5" cols="80"></textarea><br><br>
+        <button type="button" id="summarizeJD">Summarize JD</button><br><br>
+        <label for="resume">Upload Your Resume (PDF):</label><br>
+        <input type="file" id="resume" name="resume" accept=".pdf"><br><br>
+        <button type="submit">Analyze Resume</button>
+        <button type="button" id="coverLetter">Cover Letter</button><br><br>
+    </form>
+    <div id="result"></div>
+    <script>
+        document.getElementById('summarizeJD').addEventListener('click', function() {
+            const jd = document.getElementById('job_description').value;
+
+            fetch('/summarize', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ job_description: jd }),
+            }).then(response => response.json())
+              .then(data => {
+                  const resultDiv = document.getElementById('result');
+                  if (data.error) {
+                      resultDiv.innerHTML = `<p>${data.error}</p>`;
+                  } else {
+                      resultDiv.innerHTML = `<h2>Job Description Summary</h2><p>${data.summary}</p>`;
+                  }
+              }).catch(error => {
+                  console.error('Error:', error);
+                  const resultDiv = document.getElementById('result');
+                  resultDiv.innerHTML = `<p>There was an error processing your request.</p>`;
+              });
+        });
+
+        document.getElementById('coverLetter').addEventListener('click', function() {
+            const jd = document.getElementById('job_description').value;
+            const resume = document.getElementById('resume').files[0];
+
+            if (!jd || !resume) {
+                alert("Please provide both job description and resume.");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('job_description', jd);
+            formData.append('resume', resume);
+
+            fetch('/coverletter', {
+                method: 'POST',
+                body: formData
+            }).then(response => response.json())
+              .then(data => {
+                  const resultDiv = document.getElementById('result');
+                  if (data.error) {
+                      resultDiv.innerHTML = `<p>${data.error}</p>`;
+                  } else {
+                      resultDiv.innerHTML = `<h2>Cover Letter</h2><p>${data.cover_letter}</p>`;
+                  }
+              }).catch(error => {
+                  console.error('Error:', error);
+                  const resultDiv = document.getElementById('result');
+                  resultDiv.innerHTML = `<p>There was an error processing your request.</p>`;
+              });
+        });
+
+        document.getElementById('resumeForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+
+            fetch(form.action, {
+                method: form.method,
+                body: formData
+            }).then(response => response.json())
+              .then(data => {
+                  const resultDiv = document.getElementById('result');
+                  if (data.error) {
+                      resultDiv.innerHTML = `<p>${data.error}</p>`;
+                  } else {
+                      resultDiv.innerHTML = `
+                          <h2>Analysis Result</h2>
+                          <p>JD Match: ${data["JD Match"]}%</p>
+                          <p>Missing Keywords: ${data["MissingKeywords"].join(", ")}</p>
+                          <p>ATS Friendliness: ${data["ATS Friendliness"]}</p>
+                          <ul>
+                              <li>Profile Summary: ${data["Profile Summary"]}</li>
+                              <li>Things to be Removed: ${data["ThingsToBeRemoved"].join(", ")}</li>
+                              <li>Things to be Added: ${data["ThingsToBeAdded"].join(", ")}</li>
+                          </ul>
+                      `;
+                  }
+              }).catch(error => {
+                  console.error('Error:', error);
+                  const resultDiv = document.getElementById('result');
+                  resultDiv.innerHTML = `<p>There was an error processing your request.</p>`;
+              });
+        });
+    </script>
+</body>
+</html> -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Job Buddy - Improve Your Resume for ATS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="static/styles.css">
+</head>
+<body>
+    <h1>Job Buddy - Help Our Buddies Get Their Desired Job</h1>
     <form id="resumeForm" method="POST" enctype="multipart/form-data" action="/analyze">
         <label for="job_description">Job Description:</label><br>
         <textarea id="job_description" name="job_description" rows="5" cols="80"></textarea><br><br>
