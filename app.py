@@ -1,9 +1,11 @@
-from flask import Flask, request, render_template, jsonify
+from flask import Flask, request, render_template, jsonify,send_file
 from utils.pdf_extractor import input_pdf_text
 from utils.cover_letter import cover_letter
 from utils.resume_analyzer import analyze_resume
 from utils.summarizer import summarize_job_description
 from utils.interview_Guide import generate_interview_guide
+from utils.resume_generator import create_new_resume
+import io
 import os
 from dotenv import load_dotenv
 
@@ -58,6 +60,24 @@ def interviewguide():
         text = input_pdf_text(uploaded_file)
         interview_guide_text = generate_interview_guide(text, jd)
         return jsonify({"interview_guide": interview_guide_text})
+    else:
+        return jsonify({"error": "No resume or job description provided"})
+    
+@app.route("/generate", methods=["POST"])
+def generate():
+    jd = request.form["job_description"]
+    uploaded_file = request.files["resume"]
+
+    if uploaded_file and jd:
+        text = input_pdf_text(uploaded_file)
+        analysis_result = analyze_resume(text, jd)
+        pdf_data, new_resume_text = create_new_resume(uploaded_file, analysis_result)
+        return send_file(
+            io.BytesIO(pdf_data),
+            mimetype='application/pdf',
+            as_attachment=True,
+            download_name='altered_resume.pdf'
+        )
     else:
         return jsonify({"error": "No resume or job description provided"})
 
