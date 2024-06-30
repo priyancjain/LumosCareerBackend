@@ -17,6 +17,7 @@
         <button type="button" id="coverLetter">Generate Cover Letter</button>
         <button type="button" id="interviewGuide">Generate Interview Guide</button><br><br>
         <button type="button" id="generateResume">Generate Altered Resume</button><br><br>
+        <button type="button" id="extra">Generate cold mail</button><br><br>
     </form>
     </form>
     <div id="result"></div>
@@ -155,22 +156,48 @@
             fetch('/generate', {
                 method: 'POST',
                 body: formData
-            }).then(response => response.blob())
-              .then(blob => {
-                  const url = window.URL.createObjectURL(blob);
-                  const a = document.createElement('a');
-                  a.style.display = 'none';
-                  a.href = url;
-                  a.download = 'altered_resume.pdf';
-                  document.body.appendChild(a);
-                  a.click();
-                  window.URL.revokeObjectURL(url);
+            }).then(response => response.text())
+              .then(html_resume => {
+                  const resultDiv = document.getElementById('result');
+                  resultDiv.innerHTML = html_resume; // Display the generated HTML resume
               }).catch(error => {
                   console.error('Error:', error);
                   const resultDiv = document.getElementById('result');
                   resultDiv.innerHTML = `<p>There was an error processing your request.</p>`;
               });
         });
+        document.getElementById('extra').addEventListener('click', function() {
+            const jd = document.getElementById('job_description').value;
+            const resume = document.getElementById('resume').files[0];
+
+            if (!jd || !resume) {
+                alert("Please provide both job description and resume.");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('job_description', jd);
+            formData.append('resume', resume);
+
+            fetch('/extra', {
+                method: 'POST',
+                body: formData
+            }).then(response => response.json())
+              .then(data => {
+                  const resultDiv = document.getElementById('result');
+                  if (data.error) {
+                      resultDiv.innerHTML = `<p>${data.error}</p>`;
+                  } else {
+                      resultDiv.innerHTML = `<h2>Cold mail</h2><p>${data.cold_mail}</p>`;
+                  }
+              }).catch(error => {
+                  console.error('Error:', error);
+                  const resultDiv = document.getElementById('result');
+                  resultDiv.innerHTML = `<p>There was an error processing your request.</p>`;
+              });
+        });
+
+
     </script>
 </body>
 </html>
